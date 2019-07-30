@@ -7,3 +7,11 @@ mainClassName = 'net.ericchu.foosapi.FoosApi'
 
 sourceCompatibility = 11
 targetCompatibility = 11
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation 'com.graphql-java:graphql-java:13.0'
+}
