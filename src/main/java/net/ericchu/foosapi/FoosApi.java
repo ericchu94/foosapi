@@ -1,35 +1,44 @@
 package net.ericchu.foosapi;
 
-import graphql.ExecutionResult;
-import graphql.GraphQL;
-import graphql.schema.GraphQLSchema;
-import graphql.schema.StaticDataFetcher;
-import graphql.schema.idl.RuntimeWiring;
-import graphql.schema.idl.SchemaGenerator;
-import graphql.schema.idl.SchemaParser;
-import graphql.schema.idl.TypeDefinitionRegistry;
+import io.undertow.Undertow;
+import io.undertow.servlet.Servlets;
+import io.undertow.servlet.api.DeploymentInfo;
+import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.api.ServletInfo;
 
-import static graphql.schema.idl.RuntimeWiring.newRuntimeWiring;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import java.util.List;
+import java.util.stream.Collectors;
 
-class FoosApi
-{
-    public static void main(String[] args)
-    {
-        String schema = "type Query{hello: String}";
+class FoosApi {
+    public static void main(String[] args) throws ServletException {
+        List<Class<? extends Servlet>> servletClasses = List.of(GraphQLServlet.class);
+        List<ServletInfo> servletInfos = servletClasses.stream()
+                .map(servletClass -> {
+                    WebServlet webServlet = servletClass.getAnnotation(WebServlet.class);
+                    String name = webServlet.name();
+                    String[] urlPatterns = webServlet.urlPatterns();
+                    int loadOnStartup = webServlet.loadOnStartup();
+                    return Servlets.servlet(name, servletClass)
+                            .addMappings(urlPatterns)
+                            .setLoadOnStartup(loadOnStartup);
+                }).collect(Collectors.toList());
 
-        SchemaParser schemaParser = new SchemaParser();
-        TypeDefinitionRegistry typeDefinitionRegistry = schemaParser.parse(schema);
+        DeploymentInfo servletBuilder = Servlets.deployment()
+                .setDeploymentName("FoosApi")
+                .setContextPath("/")
+                .setClassLoader(FoosApi.class.getClassLoader())
+                .addServlets(servletInfos);
 
-        RuntimeWiring runtimeWiring = newRuntimeWiring()
-                .type("Query", builder -> builder.dataFetcher("hello", new StaticDataFetcher("world")))
+        DeploymentManager manager = Servlets.defaultContainer().addDeployment(servletBuilder);
+        manager.deploy();
+
+        Undertow server = Undertow.builder()
+                .addHttpListener(8080, "localhost")
+                .setHandler(manager.start())
                 .build();
-
-        SchemaGenerator schemaGenerator = new SchemaGenerator();
-        GraphQLSchema graphQLSchema = schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, runtimeWiring);
-
-        GraphQL build = GraphQL.newGraphQL(graphQLSchema).build();
-        ExecutionResult executionResult = build.execute("{hello}");
-
-        System.out.println(executionResult.getData().toString());
+        server.start();
     }
 }
