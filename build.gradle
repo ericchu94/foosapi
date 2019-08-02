@@ -18,10 +18,11 @@ dependencies {
     implementation 'io.undertow:undertow-servlet:2.0.23.Final'
     implementation 'org.slf4j:slf4j-api:1.7.26'
     runtimeOnly 'ch.qos.logback:logback-classic:1.2.3'
-    implementation 'org.mongodb:mongodb-driver-reactivestreams:1.11.0'
     implementation 'com.google.dagger:dagger:2.24'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.24'
-    implementation 'io.projectreactor:reactor-core:3.2.11.RELEASE'
+    annotationProcessor 'org.immutables:value:2.7.5'
+    compileOnly 'org.immutables:value:2.7.5'
+    implementation 'org.immutables:mongo:2.7.5'
 }
 
 spotless {
