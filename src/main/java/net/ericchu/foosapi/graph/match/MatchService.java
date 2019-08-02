@@ -35,4 +35,9 @@ public class MatchService {
     public Publisher<Match> getMatch(String id) {
         return toMono(matchRepository.findById(id).fetchFirst().transform(x -> x.orNull()));
     }
+
+    public Publisher<Match> createMatch(String name) {
+        ImmutableMatch match = ImmutableMatch.builder().name(name).build();
+        return toMono(matchRepository.insert(match).transform(x -> match));
+    }
 }

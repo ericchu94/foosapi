@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class MatchModule implements GraphQLModule {
@@ -35,8 +37,16 @@ public class MatchModule implements GraphQLModule {
 
     @Override
     public Collection<TypeRuntimeWiring> getTypeRuntimeWirings() {
-        return List.of(TypeRuntimeWiring.newTypeWiring("Query",
-                builder -> builder.dataFetcher("matches", env -> toFuture(matchService.getMatches()))
-                        .dataFetcher("match", env -> toFuture(matchService.getMatch(env.getArgument("id"))))));
+        return List.of(
+                TypeRuntimeWiring.newTypeWiring("Query",
+                        builder -> builder.dataFetcher("matches", env -> toFuture(matchService.getMatches()))
+                                .dataFetcher("match", env -> toFuture(matchService.getMatch(env.getArgument("id"))))),
+                TypeRuntimeWiring.newTypeWiring("Mutation", builder -> builder.dataFetcher("createMatch", env -> {
+                    Map<String, String> input = env.getArgument("input");
+                    return toFuture(matchService.createMatch(input.get("name"))).handle((match, ex) -> {
+                        Optional<MatchError> error = Optional.ofNullable(ex).map(MatchError::of);
+                        return ImmutableMatchPayload.builder().result(Optional.ofNullable(match)).error(error);
+                    });
+                })));
     }
 }
