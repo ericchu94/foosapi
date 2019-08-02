@@ -1,5 +1,6 @@
 extend type Query {
     matches: [Match!]!
+    match(id: ID!): Match
 }
 
 type Match {
