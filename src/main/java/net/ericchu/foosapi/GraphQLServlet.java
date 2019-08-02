@@ -2,13 +2,15 @@ package net.ericchu.foosapi;
 
 import graphql.schema.GraphQLSchema;
 import graphql.schema.StaticDataFetcher;
-import graphql.schema.idl.*;
+import graphql.schema.idl.RuntimeWiring;
+import graphql.schema.idl.SchemaGenerator;
+import graphql.schema.idl.SchemaParser;
+import graphql.schema.idl.TypeDefinitionRegistry;
 import graphql.servlet.GraphQLHttpServlet;
 import graphql.servlet.config.GraphQLConfiguration;
 import net.ericchu.foosapi.graph.GraphQLModule;
 
 import javax.servlet.annotation.WebServlet;
-
 import java.util.Collection;
 
 import static graphql.schema.idl.RuntimeWiring.newRuntimeWiring;
