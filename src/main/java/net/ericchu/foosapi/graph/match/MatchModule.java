@@ -4,12 +4,14 @@ import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
 import graphql.schema.idl.TypeRuntimeWiring;
 import net.ericchu.foosapi.graph.GraphQLModule;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class MatchModule implements GraphQLModule {
     private final MatchService matchService;
@@ -27,11 +29,14 @@ public class MatchModule implements GraphQLModule {
         }
     }
 
+    private <T> CompletableFuture<T> toFuture(Publisher<T> publisher) {
+        return Mono.from(publisher).toFuture();
+    }
+
     @Override
     public Collection<TypeRuntimeWiring> getTypeRuntimeWirings() {
         return List.of(TypeRuntimeWiring.newTypeWiring("Query",
-                builder -> builder.dataFetcher("matches", env -> Mono.from(matchService.getMatches()).toFuture())
-                        .dataFetcher("match",
-                                env -> Mono.from(matchService.getMatch(env.getArgument("id"))).toFuture())));
+                builder -> builder.dataFetcher("matches", env -> toFuture(matchService.getMatches()))
+                        .dataFetcher("match", env -> toFuture(matchService.getMatch(env.getArgument("id"))))));
     }
 }
