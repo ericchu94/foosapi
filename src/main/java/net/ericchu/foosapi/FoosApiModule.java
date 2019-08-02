@@ -21,40 +21,33 @@ import java.util.stream.Collectors;
 @Module(includes = MatchDaggerModule.class)
 public class FoosApiModule {
     @Provides
-     static Collection<Class<? extends Servlet>> servletClasses() {
+    static Collection<Class<? extends Servlet>> servletClasses() {
         List<Class<? extends Servlet>> servletClasses = List.of(GraphQLServlet.class);
 
         return servletClasses;
     }
 
     @Provides
-     static Collection<ServletInfo> servletInfos(Collection<Class<? extends Servlet>> servletClasses)
-    {
-        List<ServletInfo> servletInfos = servletClasses.stream()
-                .map(servletClass -> {
-                    WebServlet webServlet = servletClass.getAnnotation(WebServlet.class);
-                    String name = webServlet.name();
-                    String[] urlPatterns = webServlet.urlPatterns();
-                    int loadOnStartup = webServlet.loadOnStartup();
-                    return Servlets.servlet(name, servletClass)
-                            .addMappings(urlPatterns)
-                            .setLoadOnStartup(loadOnStartup);
-                }).collect(Collectors.toList());
+    static Collection<ServletInfo> servletInfos(Collection<Class<? extends Servlet>> servletClasses) {
+        List<ServletInfo> servletInfos = servletClasses.stream().map(servletClass -> {
+            WebServlet webServlet = servletClass.getAnnotation(WebServlet.class);
+            String name = webServlet.name();
+            String[] urlPatterns = webServlet.urlPatterns();
+            int loadOnStartup = webServlet.loadOnStartup();
+            return Servlets.servlet(name, servletClass).addMappings(urlPatterns).setLoadOnStartup(loadOnStartup);
+        }).collect(Collectors.toList());
         return servletInfos;
     }
 
     @Provides
-     static DeploymentInfo deploymentInfo(Collection<ServletInfo> servletInfos) {
-        DeploymentInfo deploymentInfo = Servlets.deployment()
-                .setDeploymentName("FoosApi")
-                .setContextPath("/")
-                .setClassLoader(FoosApiModule.class.getClassLoader())
-                .addServlets(servletInfos);
+    static DeploymentInfo deploymentInfo(Collection<ServletInfo> servletInfos) {
+        DeploymentInfo deploymentInfo = Servlets.deployment().setDeploymentName("FoosApi").setContextPath("/")
+                .setClassLoader(FoosApiModule.class.getClassLoader()).addServlets(servletInfos);
         return deploymentInfo;
     }
 
     @Provides
-     static DeploymentManager deploymentManager(DeploymentInfo deploymentInfo     ) {
+    static DeploymentManager deploymentManager(DeploymentInfo deploymentInfo) {
         DeploymentManager manager = Servlets.defaultContainer().addDeployment(deploymentInfo);
         manager.deploy();
         return manager;
@@ -71,10 +64,7 @@ public class FoosApiModule {
 
     @Provides
     static Undertow undertow(HttpHandler httpHandler) {
-        Undertow server = Undertow.builder()
-                .addHttpListener(8080, "localhost")
-                .setHandler(httpHandler)
-                .build();
+        Undertow server = Undertow.builder().addHttpListener(8080, "localhost").setHandler(httpHandler).build();
         return server;
     }
 

@@ -13,7 +13,7 @@ import java.util.Collection;
 
 import static graphql.schema.idl.RuntimeWiring.newRuntimeWiring;
 
-@WebServlet(name = "GraphQLServlet", urlPatterns = {"graphql/*"}, loadOnStartup = 1)
+@WebServlet(name = "GraphQLServlet", urlPatterns = { "graphql/*" }, loadOnStartup = 1)
 public class GraphQLServlet extends GraphQLHttpServlet {
     private final Collection<GraphQLModule> graphQLModules = DaggerFoosApi.create().graphQLModules();
 
@@ -34,8 +34,7 @@ public class GraphQLServlet extends GraphQLHttpServlet {
 
         graphQLModules.stream().flatMap(x -> x.getTypeRuntimeWirings().stream()).forEach(x -> builder.type(x));
 
-        builder.type("Query", x -> x.dataFetcher("hello", new StaticDataFetcher("world")))
-                .build();
+        builder.type("Query", x -> x.dataFetcher("hello", new StaticDataFetcher("world"))).build();
 
         SchemaGenerator schemaGenerator = new SchemaGenerator();
         return schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, builder.build());
