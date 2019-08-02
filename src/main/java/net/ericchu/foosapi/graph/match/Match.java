@@ -1,19 +1,27 @@
 package net.ericchu.foosapi.graph.match;
 
-public class Match {
-    private final String _id;
-    private final String name;
+import org.bson.types.ObjectId;
 
-    public Match(String id, String name) {
-        this._id = id;
-        this.name = name;
+public class Match {
+    private ObjectId id;
+    private String name;
+
+    public Match() {
     }
 
-    public String get_id() {
-        return _id;
+    public ObjectId getId() {
+        return id;
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

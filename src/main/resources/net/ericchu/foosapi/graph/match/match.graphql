@@ -3,6 +3,6 @@ extend type Query {
 }
 
 type Match {
-    _id: ID!
+    id: ID!
     name: String!
 }
