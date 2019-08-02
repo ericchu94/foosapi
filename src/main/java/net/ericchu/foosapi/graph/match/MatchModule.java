@@ -29,8 +29,9 @@ public class MatchModule implements GraphQLModule {
 
     @Override
     public Collection<TypeRuntimeWiring> getTypeRuntimeWirings() {
-        return List.of(TypeRuntimeWiring.newTypeWiring("Query", builder -> builder.dataFetcher("matches", x -> {
-            return Mono.from(matchService.getMatches()).toFuture();
-        })));
+        return List.of(TypeRuntimeWiring.newTypeWiring("Query",
+                builder -> builder.dataFetcher("matches", env -> Mono.from(matchService.getMatches()).toFuture())
+                        .dataFetcher("match",
+                                env -> Mono.from(matchService.getMatch(env.getArgument("id"))).toFuture())));
     }
 }
