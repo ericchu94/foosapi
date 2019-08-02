@@ -23,7 +23,7 @@ public class GraphQLServlet extends GraphQLHttpServlet {
     }
 
     private GraphQLSchema createSchema() {
-        String schema = "type Query{hello: String}";
+        String schema = "type Query{hello: String} type Mutation {}";
 
         SchemaParser schemaParser = new SchemaParser();
         TypeDefinitionRegistry typeDefinitionRegistry = schemaParser.parse(schema);

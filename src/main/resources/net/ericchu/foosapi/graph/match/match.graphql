@@ -7,3 +7,26 @@ type Match {
     id: ID!
     name: String!
 }
+
+extend type Mutation {
+    createMatch(input: CreateMatchInput!): CreateMatchPayload!
+}
+
+input CreateMatchInput {
+    name: String!
+}
+
+type CreateMatchPayload {
+    error: CreateMatchError
+    result: Match
+}
+
+type CreateMatchError {
+    code: CreateMatchErrorCode!
+    message: String!
+}
+
+enum CreateMatchErrorCode {
+    GENERIC
+    DUPLICATE
+}
