@@ -29,8 +29,13 @@ public class MatchDaggerModule {
     }
 
     @Provides
+    static MatchService matchService(MatchRepository matchRepository) {
+        return new MatchService(matchRepository);
+    }
+
+    @Provides
     @IntoSet
-    static GraphQLModule matchModule(MatchRepository matchRepository) {
-        return new MatchModule(matchRepository);
+    static GraphQLModule matchModule(MatchService matchService) {
+        return new MatchModule(matchService);
     }
 }

@@ -23,6 +23,7 @@ dependencies {
     annotationProcessor 'org.immutables:value:2.7.5'
     compileOnly 'org.immutables:value:2.7.5'
     implementation 'org.immutables:mongo:2.7.5'
+    implementation 'io.projectreactor:reactor-core:3.2.11.RELEASE'
 }
 
 spotless {
