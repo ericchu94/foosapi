@@ -28,10 +28,8 @@ public class MatchDaggerModule {
 
     @Provides
     static MongoClientSettings mongoClientSettings(CodecRegistry codecRegistry) {
-        return MongoClientSettings.builder()
-                .codecRegistry(codecRegistry)
-                .applyConnectionString(new ConnectionString("mongodb://localhost"))
-                .build();
+        return MongoClientSettings.builder().codecRegistry(codecRegistry)
+                .applyConnectionString(new ConnectionString("mongodb://localhost")).build();
     }
 
     @Provides
@@ -49,7 +47,8 @@ public class MatchDaggerModule {
         return mongoDatabase.getCollection("match", Match.class);
     }
 
-    @Provides @IntoSet
+    @Provides
+    @IntoSet
     static GraphQLModule matchModule(MongoCollection<Match> matchCollection) {
         return new MatchModule(matchCollection);
     }

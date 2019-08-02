@@ -35,36 +35,34 @@ public class MatchModule implements GraphQLModule {
     @Override
     public Collection<TypeRuntimeWiring> getTypeRuntimeWirings() {
         return List.of(TypeRuntimeWiring.newTypeWiring("Query", builder -> builder.dataFetcher("matches", x -> {
-                    CompletableFuture<Collection<Match>> future = new CompletableFuture<>();
+            CompletableFuture<Collection<Match>> future = new CompletableFuture<>();
 
-                    collection.find().subscribe(new Subscriber<>() {
-                        private List<Match> matches = new ArrayList<>();
+            collection.find().subscribe(new Subscriber<>() {
+                private List<Match> matches = new ArrayList<>();
 
-                        @Override
-                        public void onSubscribe(Subscription s) {
-                            s.request(Long.MAX_VALUE);
-                        }
-
-                        @Override
-                        public void onNext(Match match) {
-                            matches.add(match);
-                        }
-
-                        @Override
-                        public void onError(Throwable t) {
-                            future.completeExceptionally(t);
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            future.complete(matches);
-                        }
-                    });
-
-                    return future;
+                @Override
+                public void onSubscribe(Subscription s) {
+                    s.request(Long.MAX_VALUE);
                 }
-        ))
-                        ,TypeRuntimeWiring.newTypeWiring("Match", builder -> builder.dataFetcher("id", x -> ((Match)x.getSource()).getId().toString()))
-        );
+
+                @Override
+                public void onNext(Match match) {
+                    matches.add(match);
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    future.completeExceptionally(t);
+                }
+
+                @Override
+                public void onComplete() {
+                    future.complete(matches);
+                }
+            });
+
+            return future;
+        })), TypeRuntimeWiring.newTypeWiring("Match",
+                builder -> builder.dataFetcher("id", x -> ((Match) x.getSource()).getId().toString())));
     }
 }
