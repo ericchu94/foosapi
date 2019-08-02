@@ -1,26 +1,22 @@
 package net.ericchu.foosapi.graph.match;
 
-import com.mongodb.reactivestreams.client.MongoCollection;
+import com.google.common.util.concurrent.FutureCallback;
 import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
 import graphql.schema.idl.TypeRuntimeWiring;
 import net.ericchu.foosapi.graph.GraphQLModule;
-import org.bson.Document;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class MatchModule implements GraphQLModule {
-    private final MongoCollection<Match> collection;
+    private final MatchRepository matchRepository;
 
-    public MatchModule(MongoCollection<Match> collection) {
-        this.collection = collection;
+    public MatchModule(MatchRepository matchRepository) {
+        this.matchRepository = matchRepository;
     }
 
     @Override
@@ -35,34 +31,22 @@ public class MatchModule implements GraphQLModule {
     @Override
     public Collection<TypeRuntimeWiring> getTypeRuntimeWirings() {
         return List.of(TypeRuntimeWiring.newTypeWiring("Query", builder -> builder.dataFetcher("matches", x -> {
-            CompletableFuture<Collection<Match>> future = new CompletableFuture<>();
+            CompletableFuture<Collection<Match>> completableFuture = new CompletableFuture<>();
 
-            collection.find().subscribe(new Subscriber<>() {
-                private List<Match> matches = new ArrayList<>();
-
+            matchRepository.findAll().fetchAll().addCallback(new FutureCallback<>() {
                 @Override
-                public void onSubscribe(Subscription s) {
-                    s.request(Long.MAX_VALUE);
+                public void onSuccess(List<Match> result) {
+                    completableFuture.complete(result);
                 }
 
                 @Override
-                public void onNext(Match match) {
-                    matches.add(match);
-                }
-
-                @Override
-                public void onError(Throwable t) {
-                    future.completeExceptionally(t);
-                }
-
-                @Override
-                public void onComplete() {
-                    future.complete(matches);
+                public void onFailure(Throwable t) {
+                    completableFuture.completeExceptionally(t);
                 }
             });
 
-            return future;
+            return completableFuture;
         })), TypeRuntimeWiring.newTypeWiring("Match",
-                builder -> builder.dataFetcher("id", x -> ((Match) x.getSource()).getId().toString())));
+                builder -> builder.dataFetcher("id", x -> String.valueOf(((Match) x.getSource()).id()))));
     }
 }

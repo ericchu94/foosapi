@@ -1,27 +1,17 @@
 package net.ericchu.foosapi.graph.match;
 
-import org.bson.types.ObjectId;
+import org.immutables.mongo.Mongo;
+import org.immutables.mongo.types.Id;
+import org.immutables.value.Value;
 
-public class Match {
-    private ObjectId id;
-    private String name;
-
-    public Match() {
+@Value.Immutable
+@Mongo.Repository
+public abstract class Match {
+    @Mongo.Id
+    @Value.Default
+    public String id() {
+        return Id.generate().toString();
     }
 
-    public ObjectId getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    public abstract String name();
 }
