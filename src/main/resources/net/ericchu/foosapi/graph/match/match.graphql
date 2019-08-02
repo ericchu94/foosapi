@@ -1,0 +1,8 @@
+extend type Query {
+    matches: [Match!]!
+}
+
+type Match {
+    _id: ID!
+    name: String!
+}

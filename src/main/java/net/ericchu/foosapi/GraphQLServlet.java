@@ -8,8 +8,13 @@ import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
 import graphql.servlet.GraphQLHttpServlet;
 import graphql.servlet.config.GraphQLConfiguration;
+import net.ericchu.foosapi.graph.GraphQLModule;
+import net.ericchu.foosapi.graph.match.MatchModule;
 
 import javax.servlet.annotation.WebServlet;
+
+import java.util.Collection;
+import java.util.List;
 
 import static graphql.schema.idl.RuntimeWiring.newRuntimeWiring;
 
@@ -25,12 +30,21 @@ public class GraphQLServlet extends GraphQLHttpServlet {
 
         SchemaParser schemaParser = new SchemaParser();
         TypeDefinitionRegistry typeDefinitionRegistry = schemaParser.parse(schema);
+        for (GraphQLModule module : getModules())
+            typeDefinitionRegistry = typeDefinitionRegistry.merge(module.getTypeDefinitionRegistry());
 
-        RuntimeWiring runtimeWiring = newRuntimeWiring()
-                .type("Query", builder -> builder.dataFetcher("hello", new StaticDataFetcher("world")))
+        RuntimeWiring.Builder builder = newRuntimeWiring();
+
+        getModules().stream().flatMap(x -> x.getTypeRuntimeWirings().stream()).forEach(x -> builder.type(x));
+
+        builder.type("Query", x -> x.dataFetcher("hello", new StaticDataFetcher("world")))
                 .build();
 
         SchemaGenerator schemaGenerator = new SchemaGenerator();
-        return schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, runtimeWiring);
+        return schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, builder.build());
+    }
+
+    private Collection<GraphQLModule> getModules() {
+        return List.of(new MatchModule());
     }
 }
