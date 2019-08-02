@@ -1,13 +1,13 @@
 package net.ericchu.foosapi;
 
+import graphql.schema.GraphQLOutputType;
 import graphql.schema.GraphQLSchema;
+import graphql.schema.PropertyDataFetcher;
 import graphql.schema.StaticDataFetcher;
-import graphql.schema.idl.RuntimeWiring;
-import graphql.schema.idl.SchemaGenerator;
-import graphql.schema.idl.SchemaParser;
-import graphql.schema.idl.TypeDefinitionRegistry;
+import graphql.schema.idl.*;
 import graphql.servlet.GraphQLHttpServlet;
 import graphql.servlet.config.GraphQLConfiguration;
+import net.ericchu.foosapi.di.Provider;
 import net.ericchu.foosapi.graph.GraphQLModule;
 import net.ericchu.foosapi.graph.match.MatchModule;
 
@@ -45,6 +45,6 @@ public class GraphQLServlet extends GraphQLHttpServlet {
     }
 
     private Collection<GraphQLModule> getModules() {
-        return List.of(new MatchModule());
+        return List.of(Provider.matchModule());
     }
 }
