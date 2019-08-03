@@ -3,7 +3,6 @@ package net.ericchu.foosapi.graph.match;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.idl.TypeRuntimeWiring;
-import net.ericchu.foosapi.graph.TypeRuntimeWirings;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
@@ -14,7 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class MatchTypeRuntimeWirings implements TypeRuntimeWirings {
+public class MatchTypeRuntimeWirings {
     private final MatchService matchService;
 
     @Inject
@@ -22,7 +21,6 @@ public class MatchTypeRuntimeWirings implements TypeRuntimeWirings {
         this.matchService = matchService;
     }
 
-    @Override
     public Collection<TypeRuntimeWiring> getTypeRuntimeWirings() {
         return List.of(typeRuntimeWiring("Query", "matches", this::getMatches),
                 typeRuntimeWiring("Query", "match", this::getMatch),
