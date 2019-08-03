@@ -12,6 +12,7 @@ extend type Mutation {
     createMatch(input: CreateMatchInput!): CreateMatchPayload!
     deleteMatch(input: DeleteMatchInput!): DeleteMatchPayload!
     deleteMatches: DeleteMatchesPayload!
+    updateMatch(input: UpdateMatchInput!): UpdateMatchPayload!
 }
 
 input CreateMatchInput {
@@ -64,4 +65,28 @@ type DeleteMatchesError {
 
 enum DeleteMatchesErrorCode {
     GENERIC
+}
+
+input UpdateMatchInput {
+    id: ID!
+    fields: UpdateMatchFields!
+}
+
+input UpdateMatchFields {
+    name: String
+}
+
+type UpdateMatchPayload {
+    error: UpdateMatchError
+    result: Match
+}
+
+type UpdateMatchError {
+    code: UpdateMatchErrorCode!
+    message: String!
+}
+
+enum UpdateMatchErrorCode {
+    GENERIC
+    NOT_FOUND
 }

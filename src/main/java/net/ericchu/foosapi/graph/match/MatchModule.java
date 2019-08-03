@@ -53,10 +53,16 @@ public class MatchModule implements GraphQLModule {
                         Optional<MatchError> error = Optional.ofNullable(ex).map(MatchError::of);
                         return ImmutableMatchPayload.builder().result(Optional.ofNullable(match)).error(error).build();
                     });
-                }).dataFetcher("deleteMatches", env -> {
-                    return toFuture(matchService.deleteMatches()).handle((count, ex) -> {
+                }).dataFetcher("deleteMatches", env -> toFuture(matchService.deleteMatches()).handle((count, ex) -> {
+                    Optional<MatchError> error = Optional.ofNullable(ex).map(MatchError::of);
+                    return ImmutableMatchPayload.builder().result(Optional.ofNullable(count)).error(error).build();
+                })).dataFetcher("updateMatch", env -> {
+                    Map<String, Object> input = env.getArgument("input");
+                    String id = (String) input.get("id");
+                    Map<String, Object> fields = (Map<String, Object>) input.get("fields");
+                    return toFuture(matchService.updateMatch(id, fields)).handle((match, ex) -> {
                         Optional<MatchError> error = Optional.ofNullable(ex).map(MatchError::of);
-                        return ImmutableMatchPayload.builder().result(Optional.ofNullable(count)).error(error).build();
+                        return ImmutableMatchPayload.builder().result(Optional.ofNullable(match)).error(error).build();
                     });
                 })));
     }
