@@ -6,12 +6,14 @@ import org.immutables.mongo.concurrent.FluentFuture;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Map;
 
 public class MatchService {
     private final MatchRepository matchRepository;
 
+    @Inject
     public MatchService(MatchRepository matchRepository) {
         this.matchRepository = matchRepository;
     }
