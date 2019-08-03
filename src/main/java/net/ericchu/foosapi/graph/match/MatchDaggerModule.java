@@ -8,6 +8,7 @@ import graphql.schema.idl.TypeDefinitionRegistry;
 import graphql.schema.idl.TypeRuntimeWiring;
 import net.ericchu.foosapi.graph.BaseGraphQLModule;
 import net.ericchu.foosapi.graph.GraphQLModule;
+import net.ericchu.foosapi.mongo.MongoModule;
 import org.immutables.mongo.repository.RepositorySetup;
 
 import java.io.IOException;
@@ -15,13 +16,8 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
-@Module
+@Module(includes = MongoModule.class)
 public class MatchDaggerModule {
-    @Provides
-    static RepositorySetup repositorySetup() {
-        return RepositorySetup.forUri("mongodb://localhost/foosapi");
-    }
-
     @Provides
     static MatchRepository matchRepository(RepositorySetup repositorySetup) {
         return new MatchRepository(repositorySetup);
