@@ -1,0 +1,8 @@
+extend type Match {
+    games: [Game!]!
+}
+
+type Game {
+    id: ID!
+    name: String!
+}

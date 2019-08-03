@@ -11,6 +11,8 @@ import net.ericchu.foosapi.graph.GraphQLModule;
 import net.ericchu.foosapi.mongo.MongoModule;
 import org.immutables.mongo.repository.RepositorySetup;
 
+import javax.inject.Named;
+import javax.inject.Qualifier;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
@@ -23,7 +25,8 @@ public class MatchModule {
     }
 
     @Provides
-    static TypeDefinitionRegistry typeDefinitionRegistry() {
+    @Named("matchTypeDefinitionRegistry")
+    static TypeDefinitionRegistry matchTypeDefinitionRegistry() {
         try (InputStreamReader reader = new InputStreamReader(MatchModule.class.getResourceAsStream("match.graphql"))) {
             return new SchemaParser().parse(reader);
         } catch (IOException e) {
@@ -32,14 +35,16 @@ public class MatchModule {
     }
 
     @Provides
-    static Collection<TypeRuntimeWiring> typeRuntimeWirings(MatchTypeRuntimeWirings matchTypeRuntimeWirings) {
+    @Named("matchTypeRuntimeWirings")
+    static Collection<TypeRuntimeWiring> matchTypeRuntimeWirings(MatchTypeRuntimeWirings matchTypeRuntimeWirings) {
         return matchTypeRuntimeWirings.getTypeRuntimeWirings();
     }
 
     @Provides
     @IntoSet
-    static GraphQLModule matchModule(TypeDefinitionRegistry typeDefinitionRegistry,
-            Collection<TypeRuntimeWiring> typeRuntimeWirings) {
-        return new BaseGraphQLModule(typeDefinitionRegistry, typeRuntimeWirings);
+    static GraphQLModule matchModule(
+            @Named("matchTypeDefinitionRegistry") TypeDefinitionRegistry matchTypeDefinitionRegistry,
+            @Named("matchTypeRuntimeWirings") Collection<TypeRuntimeWiring> matchTypeRuntimeWirings) {
+        return new BaseGraphQLModule(matchTypeDefinitionRegistry, matchTypeRuntimeWirings);
     }
 }

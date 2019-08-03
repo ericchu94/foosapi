@@ -8,6 +8,7 @@ import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletInfo;
+import net.ericchu.foosapi.graph.game.GameModule;
 import net.ericchu.foosapi.graph.match.MatchModule;
 
 import javax.servlet.Servlet;
@@ -17,7 +18,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Module(includes = MatchModule.class)
+@Module(includes = { MatchModule.class, GameModule.class })
 public class FoosApiModule {
     @Provides
     static Collection<Class<? extends Servlet>> servletClasses() {
