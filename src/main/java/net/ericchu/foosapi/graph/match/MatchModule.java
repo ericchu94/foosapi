@@ -13,11 +13,10 @@ import org.immutables.mongo.repository.RepositorySetup;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.Collection;
 
 @Module(includes = MongoModule.class)
-public class MatchDaggerModule {
+public class MatchModule {
     @Provides
     static MatchRepository matchRepository(RepositorySetup repositorySetup) {
         return new MatchRepository(repositorySetup);
@@ -25,8 +24,7 @@ public class MatchDaggerModule {
 
     @Provides
     static TypeDefinitionRegistry typeDefinitionRegistry() {
-        try (InputStreamReader reader = new InputStreamReader(
-                MatchDaggerModule.class.getResourceAsStream("match.graphql"))) {
+        try (InputStreamReader reader = new InputStreamReader(MatchModule.class.getResourceAsStream("match.graphql"))) {
             return new SchemaParser().parse(reader);
         } catch (IOException e) {
             throw new RuntimeException(e);
