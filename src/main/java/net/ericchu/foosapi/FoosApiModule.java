@@ -9,7 +9,6 @@ import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletInfo;
 import net.ericchu.foosapi.graph.match.MatchDaggerModule;
-import net.ericchu.foosapi.graph.match.MatchModule;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
