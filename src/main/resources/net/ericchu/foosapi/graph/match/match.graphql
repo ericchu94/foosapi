@@ -10,6 +10,7 @@ type Match {
 
 extend type Mutation {
     createMatch(input: CreateMatchInput!): CreateMatchPayload!
+    deleteMatch(input: DeleteMatchInput!): DeleteMatchPayload!
 }
 
 input CreateMatchInput {
@@ -29,4 +30,23 @@ type CreateMatchError {
 enum CreateMatchErrorCode {
     GENERIC
     DUPLICATE
+}
+
+input DeleteMatchInput {
+    id: ID!
+}
+
+type DeleteMatchPayload {
+    error: DeleteMatchError
+    result: Match
+}
+
+type DeleteMatchError {
+    code: DeleteMatchErrorCode!
+    message: String!
+}
+
+enum DeleteMatchErrorCode {
+    GENERIC
+    NOT_FOUND
 }
