@@ -55,7 +55,8 @@ public class MatchService {
         MatchRepository.Modifier modifier = matchRepository.findById(id).andModifyFirst().returningNew();
 
         // Work around no-ops
-        modifier.initName("");
+        if (fields.isEmpty())
+            modifier.initName("");
 
         if (fields.containsKey("name"))
             modifier.setName((String) fields.get("name"));
