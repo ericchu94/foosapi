@@ -7,6 +7,7 @@ import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class MatchService {
     private final MatchRepository matchRepository;
@@ -48,5 +49,17 @@ public class MatchService {
 
     public Publisher<Integer> deleteMatches() {
         return toMono(matchRepository.findAll().deleteAll());
+    }
+
+    public Mono<Match> updateMatch(String id, Map<String, Object> fields) {
+        MatchRepository.Modifier modifier = matchRepository.findById(id).andModifyFirst().returningNew();
+
+        // Work around no-ops
+        modifier.initName("");
+
+        if (fields.containsKey("name"))
+            modifier.setName((String) fields.get("name"));
+
+        return toMono(modifier.update().transform(Optional::orNull)).single();
     }
 }
