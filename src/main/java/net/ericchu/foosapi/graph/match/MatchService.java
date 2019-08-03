@@ -45,4 +45,8 @@ public class MatchService {
     public Publisher<Match> deleteMatch(String id) {
         return toMono(matchRepository.findById(id).deleteFirst().transform(Optional::orNull)).single();
     }
+
+    public Publisher<Integer> deleteMatches() {
+        return toMono(matchRepository.findAll().deleteAll());
+    }
 }

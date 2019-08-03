@@ -8,5 +8,5 @@ import java.util.Optional;
 public abstract class MatchPayload {
     abstract Optional<MatchError> error();
 
-    abstract Optional<Match> result();
+    abstract Optional<Object> result();
 }
