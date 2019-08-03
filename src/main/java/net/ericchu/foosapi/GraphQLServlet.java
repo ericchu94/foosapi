@@ -25,7 +25,7 @@ public class GraphQLServlet extends GraphQLHttpServlet {
     }
 
     private GraphQLSchema createSchema() {
-        String schema = "type Query{hello: String} type Mutation {}";
+        String schema = "type Query{} type Mutation {}";
 
         SchemaParser schemaParser = new SchemaParser();
         TypeDefinitionRegistry typeDefinitionRegistry = schemaParser.parse(schema);
@@ -35,8 +35,6 @@ public class GraphQLServlet extends GraphQLHttpServlet {
         RuntimeWiring.Builder builder = newRuntimeWiring();
 
         graphQLModules.stream().flatMap(x -> x.getTypeRuntimeWirings().stream()).forEach(x -> builder.type(x));
-
-        builder.type("Query", x -> x.dataFetcher("hello", new StaticDataFetcher("world"))).build();
 
         SchemaGenerator schemaGenerator = new SchemaGenerator();
         return schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, builder.build());
