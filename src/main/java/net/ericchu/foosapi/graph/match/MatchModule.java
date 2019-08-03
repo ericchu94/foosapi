@@ -7,6 +7,7 @@ import net.ericchu.foosapi.graph.GraphQLModule;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
@@ -18,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class MatchModule implements GraphQLModule {
     private final MatchService matchService;
 
+    @Inject
     public MatchModule(MatchService matchService) {
         this.matchService = matchService;
     }
