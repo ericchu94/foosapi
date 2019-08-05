@@ -1,0 +1,9 @@
+extend type Game {
+    yellow: Side!
+    black: Side!
+}
+
+type Side {
+    id: ID!
+    points: Int!
+}
