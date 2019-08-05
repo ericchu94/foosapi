@@ -33,4 +33,9 @@ public class GameService {
     public Publisher<? extends Collection<Game>> getGames(String matchId) {
         return toMono(gameRepository.find(gameRepository.criteria().matchId(matchId)).fetchAll());
     }
+
+    public Publisher<Game> createGame(String matchId, String name) {
+        Game game = ImmutableGame.builder().matchId(matchId).name(name).build();
+        return toMono(gameRepository.insert(game).transform(x -> game));
+    }
 }
