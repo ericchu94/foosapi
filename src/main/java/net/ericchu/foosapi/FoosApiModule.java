@@ -89,7 +89,7 @@ public class FoosApiModule {
             GraphQLConfiguration graphQLConfiguration, WebSocketDeploymentInfo webSocketDeploymentInfo) {
         DeploymentInfo deploymentInfo = Servlets.deployment().setDeploymentName("FoosApi").setContextPath("/")
                 .setClassLoader(FoosApiModule.class.getClassLoader()).addServlets(servletInfos)
-                .addServletContextAttribute("graphQLConfiguration", graphQLConfiguration)
+                .addServletContextAttribute(GraphQLServlet.GRAPHQL_CONFIGURATION_ATTRIBUTE, graphQLConfiguration)
                 .addServletContextAttribute(WebSocketDeploymentInfo.ATTRIBUTE_NAME, webSocketDeploymentInfo);
         return deploymentInfo;
     }
