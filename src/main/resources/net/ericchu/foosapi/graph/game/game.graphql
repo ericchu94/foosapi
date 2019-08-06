@@ -6,3 +6,26 @@ type Game {
     id: ID!
     name: String!
 }
+
+extend type Mutation {
+    createGame(input: CreateGameInput!): CreateGamePayload!
+}
+
+input CreateGameInput {
+    matchId: ID!
+    name: String!
+}
+
+type CreateGamePayload {
+    error: CreateGameError
+    result: Game
+}
+
+type CreateGameError {
+    code: CreateGameErrorCode!
+    message: String!
+}
+
+enum CreateGameErrorCode {
+    GENERIC
+}
