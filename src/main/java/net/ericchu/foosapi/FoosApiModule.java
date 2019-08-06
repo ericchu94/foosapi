@@ -75,7 +75,7 @@ public class FoosApiModule {
                         super.modifyHandshake(sec, request, response);
                         graphQLWebsocketServlet.modifyHandshake(sec, request, response);
                     }
-                }).subprotocols(List.of("graphql-ws")).build();
+                }).build();
     }
 
     @Provides
