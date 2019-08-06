@@ -1,21 +1,38 @@
 package net.ericchu.foosapi.graph.match;
 
 import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.FutureCallback;
 import org.immutables.mongo.concurrent.FluentFuture;
 import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Map;
 
+@Singleton
 public class MatchService {
     private final MatchRepository matchRepository;
+    private final EventBus eventBus;
+    private final Flux<Match> matches;
 
     @Inject
-    public MatchService(MatchRepository matchRepository) {
+    public MatchService(MatchRepository matchRepository, EventBus eventBus) {
         this.matchRepository = matchRepository;
+        this.eventBus = eventBus;
+
+        this.matches = Flux.create(sink -> {
+            eventBus.register(new Object() {
+                @Subscribe
+                public void subscribe(Match match) {
+                    sink.next(match);
+                }
+            });
+        });
     }
 
     private <T> Mono<T> toMono(FluentFuture<T> future) {
@@ -40,9 +57,9 @@ public class MatchService {
         return toMono(matchRepository.findById(id).fetchFirst().transform(Optional::orNull));
     }
 
-    public Publisher<Match> createMatch(String name) {
+    public Publisher<? extends Match> createMatch(String name) {
         ImmutableMatch match = ImmutableMatch.builder().name(name).build();
-        return toMono(matchRepository.insert(match).transform(x -> match));
+        return toMono(matchRepository.insert(match).transform(x -> match)).doOnSuccess(eventBus::post);
     }
 
     public Publisher<Match> deleteMatch(String id) {
@@ -63,6 +80,10 @@ public class MatchService {
         if (fields.containsKey("name"))
             modifier.setName((String) fields.get("name"));
 
-        return toMono(modifier.update().transform(Optional::orNull)).single();
+        return toMono(modifier.update().transform(Optional::orNull)).single().doOnSuccess(eventBus::post);
+    }
+
+    public Publisher<Match> subscribeMatch(String id) {
+        return matches.filter(x -> x.id().equals(id));
     }
 }

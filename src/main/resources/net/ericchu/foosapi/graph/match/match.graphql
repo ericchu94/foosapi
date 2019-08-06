@@ -90,3 +90,7 @@ enum UpdateMatchErrorCode {
     GENERIC
     NOT_FOUND
 }
+
+extend type Subscription {
+    match(id: ID!): Match
+}
