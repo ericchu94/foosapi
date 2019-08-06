@@ -24,6 +24,7 @@ dependencies {
     compileOnly 'org.immutables:value:2.7.5'
     implementation 'org.immutables:mongo:2.7.5'
     implementation 'io.projectreactor:reactor-core:3.2.11.RELEASE'
+    implementation 'io.undertow:undertow-websockets-jsr:2.0.23.Final'
 }
 
 spotless {

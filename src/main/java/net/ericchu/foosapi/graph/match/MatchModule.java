@@ -1,5 +1,6 @@
 package net.ericchu.foosapi.graph.match;
 
+import com.google.common.eventbus.EventBus;
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntoSet;
@@ -46,5 +47,10 @@ public class MatchModule {
             @Named("matchTypeDefinitionRegistry") TypeDefinitionRegistry matchTypeDefinitionRegistry,
             @Named("matchTypeRuntimeWirings") Collection<TypeRuntimeWiring> matchTypeRuntimeWirings) {
         return new BaseGraphQLModule(matchTypeDefinitionRegistry, matchTypeRuntimeWirings);
+    }
+
+    @Provides
+    static EventBus eventBus() {
+        return new EventBus();
     }
 }

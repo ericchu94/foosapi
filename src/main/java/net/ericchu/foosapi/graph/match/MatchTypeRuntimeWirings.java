@@ -27,7 +27,8 @@ public class MatchTypeRuntimeWirings {
                 typeRuntimeWiring("Mutation", "createMatch", this::createMatch),
                 typeRuntimeWiring("Mutation", "deleteMatch", this::deleteMatch),
                 typeRuntimeWiring("Mutation", "deleteMatches", this::deleteMatches),
-                typeRuntimeWiring("Mutation", "updateMatch", this::updateMatch));
+                typeRuntimeWiring("Mutation", "updateMatch", this::updateMatch),
+                typeRuntimeWiring("Subscription", "match", this::subscribeMatch));
     }
 
     private TypeRuntimeWiring typeRuntimeWiring(String type, String field, DataFetcher dataFetcher) {
@@ -77,5 +78,9 @@ public class MatchTypeRuntimeWirings {
             Optional<MatchError> error = Optional.ofNullable(ex).map(MatchError::of);
             return ImmutableMatchPayload.builder().result(Optional.ofNullable(match)).error(error).build();
         });
+    }
+
+    public Publisher<Match> subscribeMatch(DataFetchingEnvironment env) {
+        return matchService.subscribeMatch(env.getArgument("id"));
     }
 }
