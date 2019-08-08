@@ -1,9 +1,12 @@
 package net.ericchu.foosapi.graph.side;
 
 import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.FutureCallback;
 import org.immutables.mongo.concurrent.FluentFuture;
 import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.inject.Inject;
@@ -11,10 +14,12 @@ import java.util.Map;
 
 public class SideService {
     private final SideRepository sideRepository;
+    private final EventBus eventBus;
 
     @Inject
-    public SideService(SideRepository sideRepository) {
+    public SideService(SideRepository sideRepository, EventBus eventBus) {
         this.sideRepository = sideRepository;
+        this.eventBus = eventBus;
     }
 
     private <T> Mono<T> toMono(FluentFuture<T> future) {
@@ -38,7 +43,7 @@ public class SideService {
 
     public Publisher<? extends Side> createSide(String gameId, Color color) {
         Side side = ImmutableSide.builder().gameId(gameId).color(color).build();
-        return toMono(sideRepository.insert(side).transform(x -> side));
+        return toMono(sideRepository.insert(side).transform(x -> side)).doOnSuccess(eventBus::post);
     }
 
     public Mono<Side> updateSide(String id, Map<String, Object> fields) {
@@ -51,6 +56,19 @@ public class SideService {
         if (fields.containsKey("points"))
             modifier.setPoints((int) fields.get("points"));
 
-        return toMono(modifier.update().transform(Optional::orNull)).single();
+        return toMono(modifier.update().transform(Optional::orNull)).single().doOnSuccess(eventBus::post);
+    }
+
+    public Publisher<? extends Side> subscribeSide(String id) {
+        return Flux.create(sink -> {
+            Object object = new Object() {
+                @Subscribe
+                public void subscribe(Side side) {
+                    sink.next(side);
+                }
+            };
+            eventBus.register(object);
+            sink.onDispose(() -> eventBus.unregister(object));
+        });
     }
 }

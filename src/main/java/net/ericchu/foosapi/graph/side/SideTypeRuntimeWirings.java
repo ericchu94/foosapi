@@ -25,7 +25,8 @@ public class SideTypeRuntimeWirings {
     public Collection<TypeRuntimeWiring> getTypeRuntimeWirings() {
         return List.of(typeRuntimeWiring("Game", "yellow", this::getYellowSide),
                 typeRuntimeWiring("Game", "black", this::getBlackSide),
-                typeRuntimeWiring("Mutation", "updateSide", this::updateSide));
+                typeRuntimeWiring("Mutation", "updateSide", this::updateSide),
+                typeRuntimeWiring("Subscription", "side", this::subscribeSide));
     }
 
     private TypeRuntimeWiring typeRuntimeWiring(String type, String field, DataFetcher dataFetcher) {
@@ -57,5 +58,10 @@ public class SideTypeRuntimeWirings {
             Optional<SideError> error = Optional.ofNullable(ex).map(SideError::of);
             return ImmutableSidePayload.builder().result(Optional.ofNullable(match)).error(error).build();
         });
+    }
+
+    public Publisher<? extends Side> subscribeSide(DataFetchingEnvironment env) {
+        String id = env.getArgument("id");
+        return sideService.subscribeSide(id);
     }
 }
