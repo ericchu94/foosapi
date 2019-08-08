@@ -10,6 +10,8 @@ import reactor.core.publisher.Mono;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class SideTypeRuntimeWirings {
@@ -22,7 +24,8 @@ public class SideTypeRuntimeWirings {
 
     public Collection<TypeRuntimeWiring> getTypeRuntimeWirings() {
         return List.of(typeRuntimeWiring("Game", "yellow", this::getYellowSide),
-                typeRuntimeWiring("Game", "black", this::getBlackSide));
+                typeRuntimeWiring("Game", "black", this::getBlackSide),
+                typeRuntimeWiring("Mutation", "updateSide", this::updateSide));
     }
 
     private TypeRuntimeWiring typeRuntimeWiring(String type, String field, DataFetcher dataFetcher) {
@@ -44,5 +47,15 @@ public class SideTypeRuntimeWirings {
     private CompletableFuture<? extends Side> getSide(DataFetchingEnvironment environment, Color color) {
         Game game = environment.getSource();
         return toFuture(sideService.getOrCreateSide(game.id(), color));
+    }
+
+    public CompletableFuture<SidePayload> updateSide(DataFetchingEnvironment env) {
+        Map<String, Object> input = env.getArgument("input");
+        String id = (String) input.get("id");
+        Map<String, Object> fields = (Map<String, Object>) input.get("fields");
+        return toFuture(sideService.updateSide(id, fields)).handle((match, ex) -> {
+            Optional<SideError> error = Optional.ofNullable(ex).map(SideError::of);
+            return ImmutableSidePayload.builder().result(Optional.ofNullable(match)).error(error).build();
+        });
     }
 }

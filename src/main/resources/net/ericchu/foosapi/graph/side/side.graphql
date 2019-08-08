@@ -7,3 +7,30 @@ type Side {
     id: ID!
     points: Int!
 }
+
+extend type Mutation {
+    updateSide(input: UpdateSideInput!): UpdateSidePayload!
+}
+
+input UpdateSideInput {
+    id: ID!
+    fields: UpdateSideFields!
+}
+
+input UpdateSideFields {
+    points: Int
+}
+
+type UpdateSidePayload {
+    error: UpdateSideError
+    result: Side
+}
+
+type UpdateSideError {
+    code: UpdateSideErrorCode!
+    message: String!
+}
+
+enum UpdateSideErrorCode {
+    GENERIC
+}

@@ -7,6 +7,7 @@ import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 public class SideService {
     private final SideRepository sideRepository;
@@ -38,5 +39,18 @@ public class SideService {
     public Publisher<? extends Side> createSide(String gameId, Color color) {
         Side side = ImmutableSide.builder().gameId(gameId).color(color).build();
         return toMono(sideRepository.insert(side).transform(x -> side));
+    }
+
+    public Mono<Side> updateSide(String id, Map<String, Object> fields) {
+        SideRepository.Modifier modifier = sideRepository.findById(id).andModifyFirst().returningNew();
+
+        // Work around no-ops
+        if (fields.isEmpty())
+            modifier.initPoints(0);
+
+        if (fields.containsKey("points"))
+            modifier.setPoints((int) fields.get("points"));
+
+        return toMono(modifier.update().transform(Optional::orNull)).single();
     }
 }
