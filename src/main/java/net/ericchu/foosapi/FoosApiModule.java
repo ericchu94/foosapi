@@ -1,5 +1,6 @@
 package net.ericchu.foosapi;
 
+import com.google.common.net.HttpHeaders;
 import dagger.Module;
 import dagger.Provides;
 import graphql.schema.GraphQLSchema;
@@ -11,6 +12,7 @@ import graphql.servlet.GraphQLWebsocketServlet;
 import graphql.servlet.config.GraphQLConfiguration;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.SetHeaderHandler;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
@@ -105,7 +107,9 @@ public class FoosApiModule {
     @Provides
     static HttpHandler httpHandler(DeploymentManager manager) {
         try {
-            return manager.start();
+            return new SetHeaderHandler(
+                    new SetHeaderHandler(manager.start(), HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*"),
+                    HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "content-type");
         } catch (ServletException e) {
             throw new RuntimeException(e);
         }
