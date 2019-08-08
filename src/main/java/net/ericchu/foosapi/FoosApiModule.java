@@ -19,6 +19,7 @@ import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
 import net.ericchu.foosapi.graph.GraphQLModule;
 import net.ericchu.foosapi.graph.game.GameModule;
 import net.ericchu.foosapi.graph.match.MatchModule;
+import net.ericchu.foosapi.graph.side.SideModule;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 
 import static graphql.schema.idl.RuntimeWiring.newRuntimeWiring;
 
-@Module(includes = { MatchModule.class, GameModule.class })
+@Module(includes = { MatchModule.class, GameModule.class, SideModule.class })
 public class FoosApiModule {
     @Provides
     static Collection<Class<? extends Servlet>> servletClasses() {
