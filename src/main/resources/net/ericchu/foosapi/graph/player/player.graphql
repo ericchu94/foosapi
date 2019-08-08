@@ -1,0 +1,54 @@
+extend type Query {
+    players: [Player!]!
+}
+
+type Player {
+    id: ID!
+    name: String!
+}
+
+extend type Mutation {
+    createPlayer(input: CreatePlayerInput!): CreatePlayerPayload!
+    addPlayer(input: AddPlayerInput!): AddPlayerPayload!
+}
+
+input CreatePlayerInput {
+    name: String!
+}
+
+type CreatePlayerPayload {
+    error: CreatePlayerError
+    result: Player
+}
+
+type CreatePlayerError {
+    code: CreatePlayerErrorCode!
+    message: String!
+}
+
+enum CreatePlayerErrorCode {
+    GENERIC
+}
+
+input AddPlayerInput {
+    playerId: ID!
+    sideId: ID!
+}
+
+type AddPlayerPayload {
+    error: AddPlayerError
+    result: Boolean
+}
+
+type AddPlayerError {
+    code: AddPlayerErrorCode!
+    message: String!
+}
+
+enum AddPlayerErrorCode {
+    GENERIC
+}
+
+extend type Side {
+    players: [Player!]!
+}
