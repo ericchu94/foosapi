@@ -24,6 +24,7 @@ import net.ericchu.foosapi.graph.match.MatchModule;
 import net.ericchu.foosapi.graph.player.PlayerModule;
 import net.ericchu.foosapi.graph.side.SideModule;
 
+import javax.inject.Singleton;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -140,6 +141,7 @@ public class FoosApiModule {
     }
 
     @Provides
+    @Singleton
     static GraphQLConfiguration graphQLConfiguration(GraphQLSchema graphQLSchema) {
         return GraphQLConfiguration.with(graphQLSchema).build();
     }
