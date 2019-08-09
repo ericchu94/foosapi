@@ -34,3 +34,7 @@ type UpdateSideError {
 enum UpdateSideErrorCode {
     GENERIC
 }
+
+extend type Subscription {
+    side(id: ID!): Side!
+}
