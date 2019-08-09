@@ -10,11 +10,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Map;
 
-@Singleton
 public class MatchService {
     private final MatchRepository matchRepository;
     private final EventBus eventBus;
