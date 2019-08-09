@@ -23,6 +23,7 @@ import net.ericchu.foosapi.graph.game.GameModule;
 import net.ericchu.foosapi.graph.match.MatchModule;
 import net.ericchu.foosapi.graph.player.PlayerModule;
 import net.ericchu.foosapi.graph.side.SideModule;
+import net.ericchu.foosapi.pubsub.PubSubModule;
 
 import javax.inject.Singleton;
 import javax.servlet.Servlet;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 
 import static graphql.schema.idl.RuntimeWiring.newRuntimeWiring;
 
-@Module(includes = { MatchModule.class, GameModule.class, SideModule.class, PlayerModule.class })
+@Module(includes = { PubSubModule.class, MatchModule.class, GameModule.class, SideModule.class, PlayerModule.class })
 public class FoosApiModule {
     @Provides
     static Collection<Class<? extends Servlet>> servletClasses() {
