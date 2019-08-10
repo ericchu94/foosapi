@@ -9,7 +9,9 @@ type Player {
 
 extend type Mutation {
     createPlayer(input: CreatePlayerInput!): CreatePlayerPayload!
+    deletePlayer(input: DeletePlayerInput!): DeletePlayerPayload!
     addPlayer(input: AddPlayerInput!): AddPlayerPayload!
+    addPlayerMatch(input: AddPlayerMatchInput!): AddPlayerMatchPayload!
 }
 
 input CreatePlayerInput {
@@ -51,4 +53,52 @@ enum AddPlayerErrorCode {
 
 extend type Side {
     players: [Player!]!
+}
+
+extend type Match {
+    top: [Player!]!
+    bottom: [Player!]!
+}
+
+input AddPlayerMatchInput {
+    playerId: ID!
+    matchId: ID!
+    spot: Spot!
+}
+
+enum Spot {
+    TOP
+    BOTTOM
+}
+
+type AddPlayerMatchPayload {
+    error: AddPlayerMatchError
+    result: Boolean
+}
+
+type AddPlayerMatchError {
+    code: AddPlayerMatchErrorCode!
+    message: String!
+}
+
+enum AddPlayerMatchErrorCode {
+    GENERIC
+}
+
+input DeletePlayerInput {
+    playerId: ID!
+}
+
+type DeletePlayerPayload {
+    error: DeletePlayerError
+    result: Player
+}
+
+type DeletePlayerError {
+    code: DeletePlayerErrorCode!
+    message: String!
+}
+
+enum DeletePlayerErrorCode {
+    GENERIC
 }

@@ -5,15 +5,19 @@ extend type Match {
 type Game {
     id: ID!
     name: String!
+    swapped: Boolean!
 }
 
 extend type Mutation {
     createGame(input: CreateGameInput!): CreateGamePayload!
+    updateGame(input: UpdateGameInput!): UpdateGamePayload!
+    deleteGame(input: DeleteGameInput!): DeleteGamePayload!
 }
 
 input CreateGameInput {
     matchId: ID!
     name: String!
+    swapped: Boolean!
 }
 
 type CreateGamePayload {
@@ -27,5 +31,51 @@ type CreateGameError {
 }
 
 enum CreateGameErrorCode {
+    GENERIC
+}
+
+input UpdateGameInput {
+    id: ID!
+    fields: UpdateGameFields!
+}
+
+input UpdateGameFields {
+    name: String
+    swapped: Boolean
+}
+
+type UpdateGamePayload {
+    error: UpdateGameError
+    result: Game
+}
+
+type UpdateGameError {
+    code: UpdateGameErrorCode!
+    message: String!
+}
+
+enum UpdateGameErrorCode {
+    GENERIC
+}
+
+extend type Subscription {
+    matchGames(matchId: ID!): Game!
+}
+
+input DeleteGameInput {
+    id: ID!
+}
+
+type DeleteGamePayload {
+    error: DeleteGameError
+    result: Game
+}
+
+type DeleteGameError {
+    code: DeleteGameErrorCode!
+    message: String!
+}
+
+enum DeleteGameErrorCode {
     GENERIC
 }

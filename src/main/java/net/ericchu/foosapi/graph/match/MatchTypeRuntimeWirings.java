@@ -81,6 +81,6 @@ public class MatchTypeRuntimeWirings {
     }
 
     public Publisher<Match> subscribeMatch(DataFetchingEnvironment env) {
-        return matchService.subscribeMatch(env.getArgument("id"));
+        return matchService.subscribeMatch();
     }
 }

@@ -24,7 +24,10 @@ public class GameTypeRuntimeWirings {
 
     public Collection<TypeRuntimeWiring> getTypeRuntimeWirings() {
         return List.of(typeRuntimeWiring("Match", "games", this::getGames),
-                typeRuntimeWiring("Mutation", "createGame", this::createGame));
+                typeRuntimeWiring("Mutation", "createGame", this::createGame),
+                typeRuntimeWiring("Mutation", "updateGame", this::updateGame),
+                typeRuntimeWiring("Mutation", "deleteGame", this::deleteGame),
+                typeRuntimeWiring("Subscription", "matchGames", this::subscribeMatchGames));
     }
 
     private TypeRuntimeWiring typeRuntimeWiring(String type, String field, DataFetcher dataFetcher) {
@@ -44,9 +47,34 @@ public class GameTypeRuntimeWirings {
         Map<String, Object> input = env.getArgument("input");
         String matchId = (String) input.get("matchId");
         String name = (String) input.get("name");
-        return toFuture(gameService.createGame(matchId, name)).handle((count, ex) -> {
+        boolean swapped = (boolean) input.get("swapped");
+        return toFuture(gameService.createGame(matchId, name, swapped)).handle((count, ex) -> {
             Optional<GameError> error = Optional.ofNullable(ex).map(GameError::of);
             return ImmutableGamePayload.builder().result(Optional.ofNullable(count)).error(error).build();
+        });
+    }
+
+    public CompletableFuture<? extends GamePayload> updateGame(DataFetchingEnvironment env) {
+        Map<String, Object> input = env.getArgument("input");
+        String id = (String) input.get("id");
+        Map<String, Object> fields = (Map<String, Object>) input.get("fields");
+        return toFuture(gameService.updateGame(id, fields)).handle((match, ex) -> {
+            Optional<GameError> error = Optional.ofNullable(ex).map(GameError::of);
+            return ImmutableGamePayload.builder().result(Optional.ofNullable(match)).error(error).build();
+        });
+    }
+
+    private Publisher<? extends Game> subscribeMatchGames(DataFetchingEnvironment env) {
+        String matchId = env.getArgument("matchId");
+        return gameService.subscribeMatchGames(matchId);
+    }
+
+    private CompletableFuture<? extends GamePayload> deleteGame(DataFetchingEnvironment env) {
+        Map<String, Object> input = env.getArgument("input");
+        String id = (String) input.get("id");
+        return toFuture(gameService.deleteGame(id)).handle((game, ex) -> {
+            Optional<GameError> error = Optional.ofNullable(ex).map(GameError::of);
+            return ImmutableGamePayload.builder().result(Optional.ofNullable(game)).error(error).build();
         });
     }
 }
