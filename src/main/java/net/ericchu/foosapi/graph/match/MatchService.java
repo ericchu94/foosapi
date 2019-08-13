@@ -81,7 +81,7 @@ public class MatchService {
         return toMono(modifier.update().transform(Optional::orNull)).single().doOnSuccess(eventBus::post);
     }
 
-    public Publisher<Match> subscribeMatch(String id) {
-        return matches.filter(x -> x.id().equals(id));
+    public Publisher<Match> subscribeMatch() {
+        return matches;
     }
 }

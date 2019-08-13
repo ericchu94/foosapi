@@ -92,5 +92,5 @@ enum UpdateMatchErrorCode {
 }
 
 extend type Subscription {
-    match(id: ID!): Match
+    match: Match
 }

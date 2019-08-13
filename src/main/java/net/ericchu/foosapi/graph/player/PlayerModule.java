@@ -29,6 +29,11 @@ public class PlayerModule {
     }
 
     @Provides
+    static PlayerMatchRepository playerMatchRepository(RepositorySetup repositorySetup) {
+        return new PlayerMatchRepository(repositorySetup);
+    }
+
+    @Provides
     @Named("playerTypeDefinitionRegistry")
     static TypeDefinitionRegistry playerTypeDefinitionRegistry() {
         try (InputStreamReader reader = new InputStreamReader(
