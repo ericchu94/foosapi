@@ -48,9 +48,4 @@ public class MatchModule {
             @Named("matchTypeRuntimeWirings") Collection<TypeRuntimeWiring> matchTypeRuntimeWirings) {
         return new BaseGraphQLModule(matchTypeDefinitionRegistry, matchTypeRuntimeWirings);
     }
-
-    @Provides
-    static EventBus eventBus() {
-        return new EventBus();
-    }
 }
